@@ -8,6 +8,8 @@ use Database\Seeders\Catalog\OrganizationSeeder;
 use Database\Seeders\Catalog\BranchSeeder;
 use Database\Seeders\Catalog\DepartmentSeeder;
 use Database\Seeders\Catalog\PositionSeeder;
+use Database\Seeders\Catalog\EmployeeSeeder;
+use Database\Seeders\UserSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -26,7 +28,9 @@ class DatabaseSeeder extends Seeder
             OrganizationSeeder::class,
             BranchSeeder::class,
             DepartmentSeeder::class,
-            PositionSeeder::class
+            PositionSeeder::class,
+            EmployeeSeeder::class,
+            UserSeeder::class
         ]);
     }
 }

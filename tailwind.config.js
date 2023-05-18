@@ -6,11 +6,6 @@ module.exports = {
     "./resources/**/*.vue",
   ],
   theme: {
-    extend: {
-      fontFamily: {
-        'helvetica': ['Helvetica Neue']
-      }
-    },
   },
   plugins: [],
 }

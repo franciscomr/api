@@ -4,9 +4,7 @@ export default {
 }
 </script>
 <template>
-  <div>
-    <div class="bg-gradient-to-br from-blue-400 to-indigo-400">
-      <slot name="content" />
-    </div>
+  <div class="max-h-screen  bg-cover bg-[url('/public/images/wallpaper.jpg')]">
+    <slot name="content" />
   </div>
 </template>

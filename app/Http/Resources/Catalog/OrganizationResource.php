@@ -29,9 +29,6 @@ class OrganizationResource extends JsonResource
                 'createdAt' => $this->resource->createdAt,
                 'updatedAt' => $this->resource->updatedAt
             ],
-            'links' => [
-                'self' => route('catalog.organizations.show', $this->resource->id)
-            ]
         ];
     }
 }

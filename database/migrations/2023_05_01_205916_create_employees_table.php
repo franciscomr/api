@@ -13,7 +13,18 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->unique(array('name', 'firstSurname', 'secondSurname'));
+            $table->foreignId('branch_id')->constrained();
+            $table->foreignId('position_id')->constrained();
+            $table->string('employeeId')->nullable();
+            $table->string('name');
+            $table->string('firstSurname');
+            $table->string('secondSurname');
+            $table->boolean('isActive')->default(true);
+            $table->string('createdBy');
+            $table->string('updatedBy');
+            $table->timestamp('createdAt')->useCurrent();
+            $table->timestamp('updatedAt')->useCurrent();
         });
     }
 

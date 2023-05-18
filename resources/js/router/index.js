@@ -1,37 +1,183 @@
 import { createRouter, createWebHistory } from "vue-router";
+import NotFound from '../pages/NotFound.vue';
+import Login from '../pages/Login.vue';
 import DataTable from '../templates/DataTable.vue';
+import DataForm from '../templates/DataForm.vue';
 import Home from '../templates/Home.vue';
 import About from '../components/About.vue';
 import Main from '../layouts/Main.vue';
 
 
 const menu = {
-  'Catalogos': {
+
+  'Catalog': {
     'title': 'Catálogos',
     'icon': 'bookshelf-icon',
+    'color': 'blue',
     'links': {
-      'Organizaciones': 'catalog.organizations.index',
-      'Sucursales': 'catalog.branches.index'
+      'Organizaciones': 'organizations',
+      'Sucursales': 'branches',
+      'Organizacione': 'organizations',
+      'Sucursale': 'branches',
+      'Organizacion': 'organizations',
+      'Sucursal': 'branches',
+      'Organizacion': 'organizations',
+      'Sucursal': 'branches'
+    }
+  },
+  'DeviceInventory': {
+    'title': 'Inventario de Equipos',
+    'icon': 'monitor-cellphone-icon',
+    'color': 'red',
+    'links': {
+      'Organizaciones': 'organizations',
+      'Sucursales': 'branches',
+      'Organizacione': 'organizations',
+      'Sucursale': 'branches',
+      'Organizacion': 'organizations',
+      'Sucursal': 'branches',
+      'Sucursale': 'branches',
+      'Organizacion': 'organizations',
+      'Sucursal': 'branches',
+      'Organcion': 'organizations',
+      'Sucursal': 'branches'
+    }
+  },
+  'ServiceDesk': {
+    'title': 'Mesa de Servicios',
+    'icon': 'face-agent-icon',
+    'color': 'green',
+    'links': {
+      'Organizaciones': 'organizations',
+      'Sucursales': 'branches',
+      'Organizacione': 'organizations',
+      'Sucursale': 'branches',
+      'Organizacion': 'organizations',
+      'Sucursal': 'branches',
+      'Sucursale': 'branches',
+      'Organizacion': 'organizations',
+      'Sucursal': 'branches'
     }
   }
 }
 
 const routes = [
+
+  {
+    path: "/:catchAll(.*)",
+    name: "NotFound",
+    component: NotFound,
+  },
   {
     path: "/",
     name: "index",
     component: Main,
   },
   {
-    path: "/home",
+    path: "/app",
     name: "home",
-    component: About,
+    component: Home,
+    props: { menu: menu },
+    children: [
+      {
+        path: "organizations",
+        name: "organizations",
+        component: DataTable,
+        props: {
+          title: 'Organizaciones',
+          fields: [
+            { label: 'ID', name: 'id' },
+            { label: 'Organizacion', name: 'name' },
+            { label: 'Razon Social', name: 'businessName' },
+            { label: 'Direccion', name: 'address' },
+            { label: 'Poblacion', name: 'city' },
+            { label: 'Estado', name: 'state' },
+            { label: 'C P', name: 'postalCode' },
+            { label: 'Creado Por', name: 'createdBy' },
+            { label: 'Creado a las', name: 'createdAt', filter: 'date' },
+            { label: 'Actualizado Por', name: 'updatedBy' },
+            { label: 'Actualizado a las', name: 'updatedAt', filter: 'date' },
+          ]
+        }
+      },
+      {
+        path: "/organizations/create",
+        name: "organizations.create",
+        component: DataForm,
+        props: {
+          title: 'Organizaciones',
+          resource: 'organizations',
+          fields: [
+            {
+              label: 'Nombre de la Organización',
+              name: 'name',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            },
+            {
+              label: 'Razón Social',
+              name: 'businessName',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            },
+            {
+              label: 'Dirección',
+              name: 'address',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            },
+            {
+              label: 'Ciudad / Población',
+              name: 'city',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            },
+            {
+              label: 'Estado',
+              name: 'state',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            },
+            {
+              label: 'Codigo Postal',
+              name: 'postalCode',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            }
+          ]
+        }
+      },
+      {
+        path: "/branches",
+        name: "branches",
+        component: About,
+      },
+    ]
   },
   {
     path: "/login",
     name: "login",
-    component: About,
+    component: Login,
   },
+
   /*
   {
     path: "/about",

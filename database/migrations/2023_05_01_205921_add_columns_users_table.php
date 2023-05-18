@@ -11,7 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('employee_id')->constrained()->after('id');
+            $table->string('username')->after('name')->unique();
+            $table->boolean('isActive')->after('email')->default(true);
+            $table->string('createdBy');
+            $table->string('updatedBy');
+        });
     }
 
     /**
@@ -19,6 +25,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('employee_id', 'username', 'isActive', 'createdBy', 'updatedBy');
+        });
     }
 };

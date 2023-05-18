@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Catalog\Organization;
 use Illuminate\Http\Request;
 use App\Http\Resources\Catalog\OrganizationResource;
+use App\Http\Requests\Catalog\OrganizationRequest;
 
 class OrganizationController extends Controller
 {
@@ -29,9 +30,12 @@ class OrganizationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(OrganizationRequest $request)
     {
-        //
+        $organization = Organization::create($request->validated());
+        return response()->json([
+            OrganizationResource::make($organization)
+        ], status: 201);
     }
 
     /**
@@ -63,8 +67,11 @@ class OrganizationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Organization $organization)
+    public function export()
     {
-        //
+        $organizations = Organization::applySortAndFilter(request('sort'), request('filter'))->get();
+        return response()->json(
+            ['data' => $organizations]
+        );
     }
 }

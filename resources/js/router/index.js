@@ -86,17 +86,17 @@ const routes = [
         props: {
           title: 'Organizaciones',
           fields: [
-            { label: 'ID', name: 'id' },
-            { label: 'Organizacion', name: 'name' },
-            { label: 'Razon Social', name: 'businessName' },
-            { label: 'Direccion', name: 'address' },
-            { label: 'Poblacion', name: 'city' },
-            { label: 'Estado', name: 'state' },
-            { label: 'C P', name: 'postalCode' },
-            { label: 'Creado Por', name: 'createdBy' },
-            { label: 'Creado a las', name: 'createdAt', filter: 'date' },
-            { label: 'Actualizado Por', name: 'updatedBy' },
-            { label: 'Actualizado a las', name: 'updatedAt', filter: 'date' },
+            { label: 'ID', name: 'id', width: 'w-[5%]' },
+            { label: 'Organizacion', name: 'name', width: 'w-[11%]' },
+            { label: 'Razon Social', name: 'businessName', width: 'w-[11%]' },
+            { label: 'Direccion', name: 'address', width: 'w-[10%]' },
+            { label: 'Poblacion', name: 'city', width: 'w-[8%]' },
+            { label: 'Estado', name: 'state', width: 'w-[8%]' },
+            { label: 'C P', name: 'postalCode', width: 'w-[5%]' },
+            { label: 'Creado Por', name: 'createdBy', width: 'w-[10%]' },
+            { label: 'Creado a las', name: 'createdAt', filter: 'date', width: 'w-[11%]' },
+            { label: 'Actualizado Por', name: 'updatedBy', width: 'w-[10%]' },
+            { label: 'Actualizado a las', name: 'updatedAt', filter: 'date', width: 'w-[11%]' },
           ]
         }
       },

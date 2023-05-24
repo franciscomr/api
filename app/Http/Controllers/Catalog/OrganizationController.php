@@ -15,7 +15,7 @@ class OrganizationController extends Controller
      */
     public function index()
     {
-        $organizations = Organization::applySortAndFilter(request('sort'), request('filter'))->paginate(10);
+        $organizations = Organization::applySortAndFilter(request('sort'), request('filter'))->paginate(request('perPage'));
         return OrganizationResource::collection($organizations);
     }
 

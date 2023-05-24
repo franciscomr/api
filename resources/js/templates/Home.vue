@@ -60,9 +60,15 @@ export default {
         <IconButton :icon="'bell-icon'" />
         <IconButton :icon="'account-circle-icon'" />
       </div>
+
+      <router-view />
+      <!--
+
       <div class="bg-white p-5 rounded-lg">
         <router-view />
       </div>
+      -->
+
     </div>
   </div>
 </template>

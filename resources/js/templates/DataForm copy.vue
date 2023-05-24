@@ -1,15 +1,16 @@
 <script>
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
-import store from '../store';
-import submitForm from '../functions/submit';
+import Alert from '../components/Alert.vue';
 import FormInput from '../components/FormInput.vue';
 import FormSelect from '../components/FormSelect.vue';
 import FormButton from '../components/FormButton.vue';
+import CloseIcon from 'vue-material-design-icons/Close.vue';
+import axios from 'axios';
 export default {
   name: 'DataFrom',
   components: {
-    FormInput, FormSelect, FormButton
+    FormInput, FormSelect, FormButton, CloseIcon, Alert
   },
   props: {
     title: {
@@ -30,12 +31,23 @@ export default {
     data: {
       default: {}
     },
+    full_display: {
+      type: Boolean,
+      default: false
+    }
   },
+  emits: ["alert_displayed"],
   setup(props) {
     const router = useRouter()
     const form = ref({})
     const errors = ref({})
     let submitRoute = ''
+    const showNotification = ref(false);
+    const resourceCreated = ref("");
+
+    const alert_displayed = (val) => {
+      redirect()
+    }
 
     onMounted(() => {
       if (!props.is_new_record) {
@@ -51,50 +63,58 @@ export default {
     });
 
     const submit = () => {
-      if (props.is_new_record) {
-        submitForm(props.is_new_record, submitRoute, form.value)
-          .then(res => {
-            errors.value = {}
-            let notification = {
-              type: 'success',
-              id: res.resource.attributes.id,
-              name: res.resource.attributes.name,
-              message: 'Se ha creado el recurso: '
-            }
-            store.dispatch('showNotification', notification)
-            redirect()
-          })
-          .catch(err => {
-            if (err.response) {
-              errors.value = err.response.data.errors
-            }
-            else if (err.request) {
-              console.log(err.request)
-            }
-
-          })
+      if (props.is_new_record === true) {
+        submitCreate()
       } else {
-        console.log('actualizar')
+        console.log('UPDATE')
       }
+    }
+    const submitCreate = async () => {
+      errors.value = {}
+      await axios.get('/sanctum/csrf-cookie')
+        .then(() => {
+          axios.post(submitRoute, form.value)
+            .then(res => {
+              redirect()
+              /*
+              resourceCreated.value = res.data[0]['attributes']['name']
+              console.log(resourceCreated.value)
+              showNotification.value = true
+              */
+            })
+            .catch(err => {
+              if (err.response) {
+                if (errors !== undefined && err.response.data.errors !== undefined) {
+                  errors.value = err.response.data.errors
+                }
+              }
+              else if (err.request) {
+                console.log(err.request)
+              }
+            })
+        });
     }
 
     const redirect = () => {
       if (props.resource === 'login') {
         router.push({ name: 'home' });
       } else {
-        router.push({ name: props.resource })
+        router.push({ name: props.resource }, () => {
+          this.$toasted.show('Successfully Added User')
+        }
+        );
       }
     }
 
     return {
-      submit, form, errors
+      submit, form, errors, submitCreate, showNotification, alert_displayed, resourceCreated
     }
   }
 }
 </script>
 
 <template>
-  <div class="w-full sm:max-w-lg  bg-white mx-auto p-10 rounded-lg">
+  <div class="w-full sm:max-w-md  bg-white mx-auto p-5 rounded-lg">
     <form @submit.prevent="submit()">
       <div v-for="field in fields">
         <FormInput v-if="field.type === 'input'" v-model="form[field.name]" :id="field.name" :label="field.label"

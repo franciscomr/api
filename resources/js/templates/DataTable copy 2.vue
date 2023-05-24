@@ -1,10 +1,8 @@
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import search from '../functions/search.js';
 import exportExcel from '../functions/exportExcel.js';
-import store from '../store';
-import Notification from '../components/Notification.vue';
 import BasicButton from '../components/BasicButton.vue';
 import ArrowUpThinIcon from 'vue-material-design-icons/ArrowUpThin.vue';
 import ArrowDownThinIcon from 'vue-material-design-icons/ArrowDownThin.vue';
@@ -27,7 +25,7 @@ export default {
     }
   },
   components: {
-    BasicButton, Notification,
+    BasicButton,
     ArrowUpThinIcon,
     ArrowDownThinIcon,
     CloseIcon, ReloadIcon, MagnifyIcon
@@ -83,7 +81,7 @@ export default {
           pagination.value = res.pagination
         })
     }
-    const numberItemsPerPage = (number) => {
+    const numberItemsDisplayed = (number) => {
       perPage.value = number
       searchData()
     }
@@ -102,18 +100,18 @@ export default {
       searchData()
     });
 
-    return { dataReceived, sort, sortBy, filter, searchData, showList, redirectTo, doSearchData, exportData, perPage, numberItemsPerPage, pagination, changePageDisplayed }
+    return { dataReceived, sort, sortBy, filter, searchData, showList, redirectTo, doSearchData, exportData, perPage, numberItemsDisplayed, pagination, changePageDisplayed }
   },
+
 }
 </script>
 <template>
   <div class="bg-white p-5 rounded-lg">
     <div class="p-3 space-y-4">
-      <Notification />
       <div class="flex items-center space-x-4 justify-end">
         <h1 class="text-xl font-medium w-full">{{ title }}</h1>
         <div>
-          <select name="pagination" id="pagination" v-model="perPage" @change="numberItemsPerPage(perPage)"
+          <select name="pagination" id="pagination" v-model="perPage" @change="numberItemsDisplayed(perPage)"
             class="py-2 px-0 md:px-2 bg-gray-100 shadow-none focus:shadow-md rounded-md">
             <option>10</option>
             <option>20</option>
@@ -131,7 +129,6 @@ export default {
           </BasicButton>
         </div>
       </div>
-
       <div class="relative" v-show="showList">
         <div class="absolute w-full">
           <div class="flex justify-end w-full">
@@ -146,6 +143,7 @@ export default {
                 <div @click="showList = false" class="p-1 cursor-pointer">
                   <close-icon :size=24 fillColor="#64748b" />
                 </div>
+
               </div>
 
               <div class="flex items-center p-3" v-for="field in fields" :key="field.id">
@@ -164,11 +162,12 @@ export default {
       </div>
 
       <div class="p-2 border rounded-md overflow-x-auto">
-        <table class="w-full">
+
+        <table class="w-full divide-y divide-gray-200 dark:divide-gray-700 ">
           <thead>
             <tr>
-              <th v-for="field in fields" class=" h-14 px-1 text-left text-xs font-medium text-gray-500 uppercase"
-                scope="col" :class="field.width || 'w-1/12'">
+              <th v-for="field in fields" class=" px-1 py-4 text-left text-xs font-medium text-gray-500 uppercase"
+                scope="col">
                 <div @click="sort(field.name)" class="cursor-pointer flex items-center">
                   <span class="">{{ field.label }}</span>
                   <div v-if="field.name === sortBy || field.name === sortBy.slice(1)" class="">
@@ -183,21 +182,25 @@ export default {
               </th>
             </tr>
           </thead>
-          <tbody class="">
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
             <tr v-for="data in dataReceived" :key="data.index" class="h-12 hover:bg-gray-100">
-              <td v-for="field in fields" :key="field.id" class="px-1 text-sm text-gray-800 dark:text-gray-200 border-t">
+              <td v-for="field in fields" :key="field.id"
+                class="whitespace-nowrap px-1 text-sm text-gray-800 dark:text-gray-200">
                 {{ data['attributes'][field.name] }}
               </td>
             </tr>
+
           </tbody>
         </table>
-      </div>
 
+
+
+      </div>
       <div class="flex justify-end">
         <div class=" space-x-3 inline-flex">
           <div v-for="page in pagination.links" class="">
-            <div @click="changePageDisplayed(page.url)" class="border rounded-full px-2 r"
-              :class="page.active ? 'bg-gray-100 text-blue-500' : '' || page.url !== null ? 'cursor-pointer' : ''">
+            <div @click="changePageDisplayed(page.url)" class="border rounded-full px-2 cursor-pointer"
+              :class="page.active ? 'bg-gray-100 text-blue-400' : ''">
               <span v-html="page.label"></span>
             </div>
           </div>
@@ -209,6 +212,9 @@ export default {
         }} Resultados</span>
       </div>
     </div>
+
+
+
 
   </div>
 </template>

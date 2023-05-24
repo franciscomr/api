@@ -1,53 +1,44 @@
 <script>
 import { ref, onMounted } from 'vue';
+import store from '../store';
 import CheckCircleIcon from 'vue-material-design-icons/CheckCircle.vue';
 import CloseIcon from 'vue-material-design-icons/Close.vue';
 import AlertCircleIcon from 'vue-material-design-icons/AlertCircle.vue';
 import AlertIcon from 'vue-material-design-icons/Alert.vue';
 
 export default {
-  name: 'Notifications',
+  name: 'Notification',
   props: {
     type: {
       type: String,
       default: 'success'
     },
-    message: {
-      type: String,
-      default: 'Alert'
-    },
-    resource1: {
-      type: String,
-      default: 'Resource'
-    },
-    haserrors: {
-      type: Boolean,
-      default: false,
-    },
-    errordata: {
-      default: {},
+
+    time: {
+      type: Number,
+      default: 5000
     },
   },
-  setup(props, { emit }) {
-    let notification_shown = ref(true)
-    let time = ref(4000);
+  setup(props) {
+
 
     onMounted(() => {
-      if (props.haserrors) {
-        time.value = 20000
-      }
-      fade(time.value)
+      fade(props.time)
     });
-
 
     const fade = (timevar) => {
       setTimeout(function () {
-        notification_shown.value = false;
-        emit("alert_displayed", notification_shown.value)
+        closeNotification()
+
       }, timevar);
     }
+
+    const closeNotification = () => {
+      store.dispatch('hideNotification')
+    }
+
     return {
-      notification_shown,
+      closeNotification
     }
   },
   components: {
@@ -56,7 +47,7 @@ export default {
 }
 </script>
 <template>
-  <div v-show="notification_shown" class="w-full relative">
+  <div v-show="$store.state.notification.isActive" class="w-full relative">
     <div class="w-full absolute z-10  p-3  border-l-4 "
       :class="type === 'danger' ? 'bg-red-100 border-red-600' : type === 'warning' ? 'bg-yellow-100 border-yellow-600' : 'bg-green-100 border-green-600'">
       <div class="flex items-center space-x-3">
@@ -67,9 +58,15 @@ export default {
           <alert-icon :size=20 fillColor="#fff" v-show="type === 'danger'" />
         </div>
         <div class="flex w-full">
-          <h1 class="text-slate-600 font-medium">{{ message }} {{ resource1 }}</h1>
+          <span>{{ $store.state.notification.message || 'Se ha creado el recurso: ' }} </span>
+          <span class="px-1 font-medium">{{ $store.state.notification.resource.name || 'RESOURCE' }} </span>
+          <span class="px-1">{{ 'con ID: ' }} </span>
+          <span class="font-medium">{{ $store.state.notification.resource.id || 'ID' }} </span>
+
+
+
         </div>
-        <div @click="notification_shown = false" class=" p-2 rounded-lg">
+        <div @click="closeNotification" class=" p-2 rounded-lg cursor-pointer">
           <close-icon :size=20 fillColor="#475569" />
         </div>
       </div>

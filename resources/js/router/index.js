@@ -87,16 +87,20 @@ const routes = [
           title: 'Organizaciones',
           fields: [
             { label: 'ID', name: 'id', width: 'w-[5%]' },
-            { label: 'Organizacion', name: 'name', width: 'w-[11%]' },
-            { label: 'Razon Social', name: 'businessName', width: 'w-[11%]' },
-            { label: 'Direccion', name: 'address', width: 'w-[10%]' },
-            { label: 'Poblacion', name: 'city', width: 'w-[8%]' },
-            { label: 'Estado', name: 'state', width: 'w-[8%]' },
+            { label: 'Organizacion', name: 'name', width: 'w-[12%]' },
+            { label: 'Razon Social', name: 'businessName', width: 'w-[12%]' },
+            { label: 'Direccion', name: 'address', width: 'w-[12%]' },
+            { label: 'Poblacion', name: 'city', width: 'w-[10%]' },
+            { label: 'Estado', name: 'state', width: 'w-[10%]' },
             { label: 'C P', name: 'postalCode', width: 'w-[5%]' },
-            { label: 'Creado Por', name: 'createdBy', width: 'w-[10%]' },
-            { label: 'Creado a las', name: 'createdAt', filter: 'date', width: 'w-[11%]' },
-            { label: 'Actualizado Por', name: 'updatedBy', width: 'w-[10%]' },
-            { label: 'Actualizado a las', name: 'updatedAt', filter: 'date', width: 'w-[11%]' },
+            { label: 'Creado Por', name: 'createdBy', width: 'w-[12%]' },
+            { label: 'Creado a las', name: 'createdAt', filter: 'date', width: 'w-[12%]' }
+            //     { label: 'Actualizado Por', name: 'updatedBy', width: 'w-[10%]' },
+            //   { label: 'Actualizado a las', name: 'updatedAt', filter: 'date', width: 'w-[11%]' },
+          ],
+          actions: [
+            { name: 'show', icon: 'eye', title: 'Mostrar Registro' },
+            { name: 'edit', icon: 'pencil', route: 'organizations.edit', title: 'Editar Registro' },
           ]
         }
       },
@@ -107,6 +111,72 @@ const routes = [
         props: {
           title: 'Organizaciones',
           resource: 'organizations',
+          fields: [
+            {
+              label: 'Nombre de la Organización',
+              name: 'name',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            },
+            {
+              label: 'Razón Social',
+              name: 'businessName',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            },
+            {
+              label: 'Dirección',
+              name: 'address',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            },
+            {
+              label: 'Ciudad / Población',
+              name: 'city',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            },
+            {
+              label: 'Estado',
+              name: 'state',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            },
+            {
+              label: 'Codigo Postal',
+              name: 'postalCode',
+              type: 'input',
+              propieties: {
+                type: 'text',
+                required: true
+              }
+            }
+          ]
+        }
+      },
+      {
+        path: "/organizations/edit/:id",
+        name: "organizations.edit",
+        component: DataForm,
+        props: {
+          title: 'Organizaciones',
+          resource: 'organizations',
+          is_new_record: false,
           fields: [
             {
               label: 'Nombre de la Organización',

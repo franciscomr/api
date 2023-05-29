@@ -29,4 +29,6 @@ Route::controller(OrganizationController::class)->group(function () {
     route::get('organizations', 'index')->name('organizations.index');
     route::post('organizations', 'store')->name('organizations.store');
     route::get('organizations/export', 'export')->name('organizations.export');
+    route::get('organizations/{id}', 'show')->name('organizations.show');
+    route::patch('organizations/{organization}', 'update')->name('organizations.update');
 });

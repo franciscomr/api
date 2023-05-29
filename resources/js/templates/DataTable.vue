@@ -11,7 +11,7 @@ import ArrowDownThinIcon from 'vue-material-design-icons/ArrowDownThin.vue';
 import CloseIcon from 'vue-material-design-icons/Close.vue';
 import ReloadIcon from 'vue-material-design-icons/Reload.vue';
 import MagnifyIcon from 'vue-material-design-icons/Magnify.vue';
-
+import IconTemplate from '../components/Icon.vue';
 export default {
   name: 'DataTable',
   props: {
@@ -30,7 +30,7 @@ export default {
     BasicButton, Notification,
     ArrowUpThinIcon,
     ArrowDownThinIcon,
-    CloseIcon, ReloadIcon, MagnifyIcon
+    CloseIcon, ReloadIcon, MagnifyIcon, IconTemplate
   },
   setup(props) {
     const showList = ref(false);
@@ -98,11 +98,14 @@ export default {
       }
     }
 
+    const redirectToRoute = (url, id) => {
+      return router.push({ name: url, params: { id: id } });
+    }
     onMounted(() => {
       searchData()
     });
 
-    return { dataReceived, sort, sortBy, filter, searchData, showList, redirectTo, doSearchData, exportData, perPage, numberItemsPerPage, pagination, changePageDisplayed }
+    return { dataReceived, sort, sortBy, filter, searchData, showList, redirectTo, doSearchData, exportData, perPage, numberItemsPerPage, pagination, changePageDisplayed, redirectToRoute }
   },
 }
 </script>
@@ -114,7 +117,7 @@ export default {
         <h1 class="text-xl font-medium w-full">{{ title }}</h1>
         <div>
           <select name="pagination" id="pagination" v-model="perPage" @change="numberItemsPerPage(perPage)"
-            class="py-2 px-0 md:px-2 bg-gray-100 shadow-none focus:shadow-md rounded-md">
+            aria-label="pagination" class="py-2 px-0 md:px-2 bg-gray-100 shadow-none focus:shadow-md rounded-md">
             <option>10</option>
             <option>20</option>
             <option>50</option>
@@ -181,12 +184,43 @@ export default {
                   </div>
                 </div>
               </th>
+              <th v-if="actions"></th>
             </tr>
           </thead>
           <tbody class="">
             <tr v-for="data in dataReceived" :key="data.index" class="h-12 hover:bg-gray-100">
               <td v-for="field in fields" :key="field.id" class="px-1 text-sm text-gray-800 dark:text-gray-200 border-t">
                 {{ data['attributes'][field.name] }}
+              </td>
+              <td v-if="actions" class="px-1 text-sm text-gray-800 dark:text-gray-200 border">
+                <div v-for="action in actions" class="inline-flex items-center justify-center">
+                  <router-link v-if="action.route !== undefined"
+                    class="flex  p-2 border hover:bg-white hover:text-gray-700 rounded-md"
+                    :to="{ name: action.route, params: { id: data['attributes']['id'] } }">
+                    <IconTemplate :name="action.icon" />
+                  </router-link>
+                  <button v-else class="flex  p-2 border hover:bg-white hover:text-gray-700 rounded-md">
+                    <IconTemplate :name="action.icon" />
+                  </button>
+
+
+                  <!--
+
+
+                  <a href="" v-if="action.route !== undefined"
+                    class="flex  p-2 border hover:bg-white hover:text-gray-700 rounded-md">
+                    <IconTemplate :name="action.icon" />
+                  </a>
+
+                  <button v-else class="flex  p-2 border hover:bg-white hover:text-gray-700 rounded-md">
+                    <IconTemplate :name="action.icon" />
+                  </button>
+
+
+-->
+
+
+                </div>
               </td>
             </tr>
           </tbody>

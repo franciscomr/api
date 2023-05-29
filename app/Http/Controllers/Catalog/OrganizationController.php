@@ -41,8 +41,9 @@ class OrganizationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Organization $organization)
+    public function show($id)
     {
+        $organization = Organization::findOrFail($id);
         return response()->json([
             'data' =>  OrganizationResource::make($organization)
         ]);
@@ -59,9 +60,14 @@ class OrganizationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Organization $organization)
+    public function update(OrganizationRequest $request, Organization $organization)
     {
-        //
+        Organization::where('id', $organization->id)->update($request->validated());
+
+        $organizationUpdated = Organization::findOrFail($organization->id);
+        return response()->json([
+            OrganizationResource::make($organizationUpdated)
+        ]);
     }
 
     /**

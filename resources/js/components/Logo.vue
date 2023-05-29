@@ -16,7 +16,7 @@ export default {
 
 <template>
   <div>
-    <img :src="src" class="mx-auto text"
+    <img :src="src" class="mx-auto" aria-label="Logo SAGAJI"
       :class="size === 'xs' ? 'h-8' : size === 'sm' ? 'h-12' : size === 'md' ? 'h-16' : size === 'lg' ? 'h-24' : size === 'xl' ? 'h-32' : size === '2xl' ? 'h-48' : size === '3xl' ? 'h-64' : 'h-72'" />
   </div>
 </template>

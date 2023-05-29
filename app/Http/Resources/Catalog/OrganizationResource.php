@@ -17,7 +17,7 @@ class OrganizationResource extends JsonResource
         return [
             'type' => 'organizations',
             'attributes' => [
-                'id' => (string) $this->resource->id,
+                'id' =>  $this->resource->id,
                 'name' => $this->resource->name,
                 'businessName' => $this->resource->businessName,
                 'address' => $this->resource->address,

@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import store from '../store';
+import show from '../functions/show';
 import submitForm from '../functions/submit';
 import FormInput from '../components/FormInput.vue';
 import FormSelect from '../components/FormSelect.vue';
@@ -39,8 +40,20 @@ export default {
 
     onMounted(() => {
       if (!props.is_new_record) {
-        form.value = props.data
-        submitRoute = route(props.resource + '.update');
+        submitRoute = route(props.resource + '.update', router.currentRoute.value.params.id);
+        show(route(props.resource + '.show', router.currentRoute.value.params.id))
+          .then(res => {
+            form.value = res.data.attributes
+          })
+          .catch(err => {
+            if (err.response) {
+              errors.value = err.response.data.errors
+            }
+            else if (err.request) {
+              console.log(err.request)
+            }
+          })
+
       } else {
         if (props.resource === 'login') {
           submitRoute = route(props.resource);
@@ -51,31 +64,34 @@ export default {
     });
 
     const submit = () => {
-      if (props.is_new_record) {
-        submitForm(props.is_new_record, submitRoute, form.value)
-          .then(res => {
-            errors.value = {}
+      submitForm(props.is_new_record, submitRoute, form.value)
+        .then(res => {
+          errors.value = {}
+          if (props.resource !== 'login') {
+            let notificationMessage = 'Se ha creado el recurso: ';
+            if (!props.is_new_record) {
+              notificationMessage = 'Se ha Actualizado el recurso: '
+            }
             let notification = {
               type: 'success',
-              id: res.resource.attributes.id,
-              name: res.resource.attributes.name,
-              message: 'Se ha creado el recurso: '
+              id: res.attributes.id,
+              name: res.attributes.name,
+              message: notificationMessage
             }
             store.dispatch('showNotification', notification)
-            redirect()
-          })
-          .catch(err => {
-            if (err.response) {
-              errors.value = err.response.data.errors
-            }
-            else if (err.request) {
-              console.log(err.request)
-            }
+          }
+          redirect()
+        })
+        .catch(err => {
+          if (err.response) {
+            errors.value = err.response.data.errors
+          }
+          else if (err.request) {
+            console.log(err.request)
+          }
 
-          })
-      } else {
-        console.log('actualizar')
-      }
+        })
+
     }
 
     const redirect = () => {

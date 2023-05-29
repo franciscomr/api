@@ -1,14 +1,17 @@
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import search from '../functions/search.js';
 import exportExcel from '../functions/exportExcel.js';
+import store from '../store';
+import Notification from '../components/Notification.vue';
 import BasicButton from '../components/BasicButton.vue';
-import Breadcrum from '../components/Breadcrum.vue';
 import ArrowUpThinIcon from 'vue-material-design-icons/ArrowUpThin.vue';
 import ArrowDownThinIcon from 'vue-material-design-icons/ArrowDownThin.vue';
 import CloseIcon from 'vue-material-design-icons/Close.vue';
 import ReloadIcon from 'vue-material-design-icons/Reload.vue';
+import MagnifyIcon from 'vue-material-design-icons/Magnify.vue';
+
 export default {
   name: 'DataTable',
   props: {
@@ -24,11 +27,10 @@ export default {
     }
   },
   components: {
-    BasicButton,
+    BasicButton, Notification,
     ArrowUpThinIcon,
     ArrowDownThinIcon,
-    CloseIcon,
-    Breadcrum, ReloadIcon
+    CloseIcon, ReloadIcon, MagnifyIcon
   },
   setup(props) {
     const showList = ref(false);
@@ -45,7 +47,6 @@ export default {
         if (value !== sortBy.value) {
           sortBy.value = value
         }
-
       } else {
         if (value === sortBy.value) {
           sortBy.value = '-' + value
@@ -56,12 +57,14 @@ export default {
       searchData();
     }
 
-
     const redirectTo = (path) => {
       router.push({ name: path });
     }
-    const reload = () => {
-      filter.value = {}
+
+    const doSearchData = (resetSearchFilter) => {
+      if (resetSearchFilter === true) {
+        filter.value = {}
+      }
       searchData()
       showList.value = false
     }
@@ -80,36 +83,41 @@ export default {
           pagination.value = res.pagination
         })
     }
-    const numberItemsDisplayed = (number) => {
+    const numberItemsPerPage = (number) => {
       perPage.value = number
       searchData()
+    }
+
+    const changePageDisplayed = async (url) => {
+      if (url !== null) {
+        await search(url, sortBy.value, filter.value, perPage.value)
+          .then(res => {
+            dataReceived.value = res.data;
+            pagination.value = res.pagination
+          })
+      }
     }
 
     onMounted(() => {
       searchData()
     });
 
-    return { dataReceived, sort, sortBy, filter, searchData, showList, redirectTo, reload, exportData, perPage, numberItemsDisplayed, pagination }
+    return { dataReceived, sort, sortBy, filter, searchData, showList, redirectTo, doSearchData, exportData, perPage, numberItemsPerPage, pagination, changePageDisplayed }
   },
-
 }
 </script>
-
 <template>
   <div class="bg-white p-5 rounded-lg">
     <div class="p-3 space-y-4">
+      <Notification />
       <div class="flex items-center space-x-4 justify-end">
-
         <h1 class="text-xl font-medium w-full">{{ title }}</h1>
         <div>
-          <select name="pagination" id="pagination" v-model="perPage" @change="numberItemsDisplayed(perPage)"
-            class="py-2 px-0 md:px-2 bg-gray-100 shadow-none focus:shadow-md rounded-md">
-            <option>5</option>
-            <option>8</option>
+          <select name="pagination" id="pagination" v-model="perPage" @change="numberItemsPerPage(perPage)"
+            aria-label="pagination" class="py-2 px-0 md:px-2 bg-gray-100 shadow-none focus:shadow-md rounded-md">
             <option>10</option>
             <option>20</option>
             <option>50</option>
-
           </select>
         </div>
         <div>
@@ -123,13 +131,21 @@ export default {
           </BasicButton>
         </div>
       </div>
+
       <div class="relative" v-show="showList">
         <div class="absolute w-full">
           <div class="flex justify-end w-full">
             <div class="backdrop-blur-sm bg-white/90 shadow-md p-4 w-full md:w-96">
-              <div class="flex justify-end">
-                <reload-icon @click="reload" v-show="showList" :size=24 fillColor="#64748b" class="p-1 cursor-pointer" />
-                <close-icon @click="showList = false" :size=24 fillColor="#64748b" class="p-1 cursor-pointer" />
+              <div class="flex justify-end space-x-3">
+                <div @click="doSearchData(true)" class="border p-1 cursor-pointer">
+                  <reload-icon :size=24 fillColor="#64748b" />
+                </div>
+                <div @click="doSearchData(false)" class="border p-1 cursor-pointer">
+                  <magnify-icon :size=24 fillColor="#64748b" />
+                </div>
+                <div @click="showList = false" class="p-1 cursor-pointer">
+                  <close-icon :size=24 fillColor="#64748b" />
+                </div>
               </div>
 
               <div class="flex items-center p-3" v-for="field in fields" :key="field.id">
@@ -147,14 +163,15 @@ export default {
         </div>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left">
-          <thead class="">
-            <tr class="h-14 border-t border-b">
-              <th v-for="field in fields" class="px-1 font-medium w-1/12">
+      <div class="p-2 border rounded-md overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr>
+              <th v-for="field in fields" class=" h-14 px-1 text-left text-xs font-medium text-gray-500 uppercase"
+                scope="col" :class="field.width || 'w-1/12'">
                 <div @click="sort(field.name)" class="cursor-pointer flex items-center">
                   <span class="">{{ field.label }}</span>
-                  <div v-if="field.name === sortBy || field.name === sortBy.slice(1)" class="mr-3">
+                  <div v-if="field.name === sortBy || field.name === sortBy.slice(1)" class="">
                     <span v-show="field.name === sortBy">
                       <arrow-up-thin-icon :size=16 fillColor="#64748b" />
                     </span>
@@ -166,9 +183,9 @@ export default {
               </th>
             </tr>
           </thead>
-          <tbody>
-            <tr class="h-12 text-md border-b hover:bg-gray-100" v-for="data in dataReceived" :key="data.index">
-              <td v-for="field in fields" :key="field.id" class="px-1 text-gray-600">
+          <tbody class="">
+            <tr v-for="data in dataReceived" :key="data.index" class="h-12 hover:bg-gray-100">
+              <td v-for="field in fields" :key="field.id" class="px-1 text-sm text-gray-800 dark:text-gray-200 border-t">
                 {{ data['attributes'][field.name] }}
               </td>
             </tr>
@@ -176,19 +193,22 @@ export default {
         </table>
       </div>
 
-      <div class=" space-x-4 inline-flex">
-        <div v-for="page in pagination.links" class="">
-          <div class="border">
-            <span>{{ page.label }}</span>
+      <div class="flex justify-end">
+        <div class=" space-x-3 inline-flex">
+          <div v-for="page in pagination.links" class="">
+            <div @click="changePageDisplayed(page.url)" class="border rounded-full px-2 r"
+              :class="page.active ? 'bg-gray-100 text-blue-500' : '' || page.url !== null ? 'cursor-pointer' : ''">
+              <span v-html="page.label"></span>
+            </div>
           </div>
-
-
         </div>
       </div>
+
+      <div>
+        <span>{{ pagination.from }} - {{ pagination.to }} <span class="px-1">de</span> {{ pagination.total
+        }} Resultados</span>
+      </div>
     </div>
-
-
-
 
   </div>
 </template>

@@ -30,7 +30,7 @@ export default {
 
 <template>
   <div class="flex h-full backdrop-blur-sm bg-white/90 rounded-xl">
-    <div class="sm:w-72 md:block hidden shrink-0 space-y-6 p-4">
+    <div class="sm:w-64 md:block hidden shrink-0 space-y-6 p-4">
       <div class="">
         <Logo :size="'md'" />
       </div>

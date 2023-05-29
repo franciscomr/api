@@ -64,7 +64,7 @@ export default {
         <span class="p-1 rounded-md" :class="DropDownClass[color] || 'bg-red-400'">
           <component v-bind:is="icon" fillColor="#fff" :size=20></component>
         </span>
-        <span class=" w-full px-2 font-medium">
+        <span class=" w-full px-2 font-medium text-sm">
           {{ title }}
         </span>
         <span class="flex justify-end">
